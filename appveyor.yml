@@ -1,0 +1,13 @@
+﻿image: Visual Studio 2017
+
+configuration:
+  - Release
+
+build_script:
+  - dotnet build
+
+test_script:
+  - dotnet test --no-build
+
+artifacts:
+  - path: '**\*.nupkg'
