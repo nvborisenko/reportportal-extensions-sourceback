@@ -69,7 +69,7 @@ namespace ReportPortal.Extensions.SourceBack
                             // and add whitespace to replace it with ►
                             var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
                             // TODO: calculate new index line
-                            frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
+                            //frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
                             var frameContent = string.Join(Environment.NewLine, frameContentLines);
 
                             sectionBuilder.AppendLine($"{Environment.NewLine}```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
