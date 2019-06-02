@@ -3,11 +3,21 @@
 configuration:
   - Release
 
+install:
+  - gitversion /l console /output buildserver
+
+dotnet_csproj:
+  patch: true
+  version: '$(GitVersion_NuGetVersion)'
+
 build_script:
   - dotnet build
 
 test_script:
   - dotnet test --no-build
+
+after_test:
+  - dotnet pack
 
 artifacts:
   - path: '**\*.nupkg'
