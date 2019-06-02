@@ -38,6 +38,7 @@ namespace ReportPortal.Extensions.SourceBack
                             if (_pdbs == null)
                             {
                                 var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
+
                                 var pdbFilePaths = Pdb.DirectoryScanner.FindPdbPaths(currentDirectory);
 
                                 _pdbs = new List<Pdb.PdbFileInfo>();
@@ -56,7 +57,12 @@ namespace ReportPortal.Extensions.SourceBack
 
                             var content = pdb.GetSourceLinkContent(sourcePath);
 
-                            var contentLines = content.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                            if (content == null)
+                            {
+                                throw new Exception($"Cannot get content of '{sourcePath}' source.");
+                            }
+
+                            var contentLines = content.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
 
                             // above
                             var takeFromIndex = lineIndex - 4;
@@ -69,7 +75,7 @@ namespace ReportPortal.Extensions.SourceBack
                             // and add whitespace to replace it with ►
                             var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
                             // TODO: calculate new index line
-                            //frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
+                            frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
                             var frameContent = string.Join(Environment.NewLine, frameContentLines);
 
                             sectionBuilder.AppendLine($"{Environment.NewLine}```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
