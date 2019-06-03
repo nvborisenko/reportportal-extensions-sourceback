@@ -55,31 +55,35 @@ namespace ReportPortal.Extensions.SourceBack
 
                             var pdb = _pdbs.FirstOrDefault(p => p.SourceLinks.ContainsKey(sourcePath));
 
-                            var content = pdb.GetSourceLinkContent(sourcePath);
-
-                            if (content == null)
+                            // if available
+                            if (pdb != null)
                             {
-                                throw new Exception($"Cannot get content of '{sourcePath}' source.");
+                                var content = pdb.GetSourceLinkContent(sourcePath);
+
+                                if (content == null)
+                                {
+                                    throw new Exception($"Cannot get content of '{sourcePath}' source.");
+                                }
+
+                                var contentLines = content.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
+
+                                // above
+                                var takeFromIndex = lineIndex - 4;
+                                if (takeFromIndex < 0) takeFromIndex = 0;
+
+                                // bottom
+                                var takeToIndex = lineIndex + 2;
+                                if (takeToIndex > contentLines.Length - 1) takeToIndex = contentLines.Length - 1;
+
+                                // and add whitespace to replace it with ►
+                                var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
+                                // TODO: calculate new index line
+                                frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
+                                var frameContent = string.Join(Environment.NewLine, frameContentLines);
+
+                                sectionBuilder.AppendLine($"{Environment.NewLine}```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
+                                sectionBuilder.AppendLine($"[Open in VisualStudioCode](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})");
                             }
-
-                            var contentLines = content.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
-
-                            // above
-                            var takeFromIndex = lineIndex - 4;
-                            if (takeFromIndex < 0) takeFromIndex = 0;
-
-                            // bottom
-                            var takeToIndex = lineIndex + 2;
-                            if (takeToIndex > contentLines.Length - 1) takeToIndex = contentLines.Length - 1;
-
-                            // and add whitespace to replace it with ►
-                            var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
-                            // TODO: calculate new index line
-                            frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
-                            var frameContent = string.Join(Environment.NewLine, frameContentLines);
-
-                            sectionBuilder.AppendLine($"{Environment.NewLine}```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
-                            sectionBuilder.AppendLine($"[Open in VisualStudioCode](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})");
                         }
                         catch (Exception exp)
                         {
