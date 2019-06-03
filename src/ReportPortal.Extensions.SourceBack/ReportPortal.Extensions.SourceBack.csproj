@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <Version>1.0.0</Version>
-    <Description>Paste a piece of source code where test was failed</Description>
+    <Description>Hightlight source code in report where test was failed</Description>
     <Authors>Nikolay Borisenko</Authors>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nvborisenko/reportportal-extensions-sourceback/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
