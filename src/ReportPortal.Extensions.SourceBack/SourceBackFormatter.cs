@@ -87,7 +87,7 @@ namespace ReportPortal.Extensions.SourceBack
                         }
                         catch (Exception exp)
                         {
-                            sectionBuilder.AppendLine($"```SourceBack error: {exp}```");
+                            sectionBuilder.AppendLine($"```{Environment.NewLine}SourceBack error: {exp}{Environment.NewLine}```");
                         }
 
                         handled = true;
