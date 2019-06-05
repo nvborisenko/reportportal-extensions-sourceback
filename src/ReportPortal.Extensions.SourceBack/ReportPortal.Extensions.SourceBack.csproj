@@ -7,7 +7,7 @@
     <Authors>Nikolay Borisenko</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/nvborisenko/reportportal-extensions-sourceback/Logo.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/nvborisenko/reportportal-extensions-sourceback/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/nvborisenko/reportportal-extensions-sourceback</RepositoryUrl>
     <PackageTags>report reportportal testing source</PackageTags>
