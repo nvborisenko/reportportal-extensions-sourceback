@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using ReportPortal.Extensions.SourceBack.Pdb;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Extensions.SourceBack.Test
 {
@@ -11,7 +13,15 @@ namespace ReportPortal.Extensions.SourceBack.Test
         {
             try
             {
-                throw new Exception("Test");
+                var tasks = new List<Task>();
+
+                for (int i = 0; i < 100; i++)
+                {
+                    var t = Task.Run(() => { throw new Exception("Test"); });
+                    tasks.Add(t);
+                }
+
+                Task.WaitAll(tasks.ToArray());
             }
             catch (Exception exp)
             {

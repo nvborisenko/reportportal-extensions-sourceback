@@ -19,6 +19,8 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
         public IDictionary<string, DocumentHandle> SourceLinks { get; set; }
 
+        private IDictionary<string, string> _sourceLinkContents = new Dictionary<string, string>();
+
         public void LoadSourceLinks()
         {
             SourceLinks = new Dictionary<string, DocumentHandle>();
@@ -42,9 +44,14 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
         public string GetSourceLinkContent(string link)
         {
+            if (_sourceLinkContents.ContainsKey(link))
+            {
+                return _sourceLinkContents[link];
+            }
+
             var documentHandle = SourceLinks[link];
 
-            byte[] bytes = null;
+            string content = null;
 
             foreach (var cdih in MetadataReader.GetCustomDebugInformation(documentHandle))
             {
@@ -53,7 +60,7 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
                 if (MetadataReader.GetGuid(cdi.Kind) == Guid.Parse("0E8A571B-6926-466E-B4AD-8AB04611F5FE"))
                 {
                     // embedded content
-                    bytes = MetadataReader.GetBlobBytes(cdi.Value);
+                    var bytes = MetadataReader.GetBlobBytes(cdi.Value);
 
                     // decompress content
                     int uncompressedSize = BitConverter.ToInt32(bytes, 0);
@@ -75,20 +82,22 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
                     stream.Position = 0;
                     StreamReader streamReader = new StreamReader(stream);
 
-                    return streamReader.ReadToEnd();
+                    content = streamReader.ReadToEnd();
                 }
             }
 
-            if (bytes == null)
+            if (content == null)
             {
                 // from external link
                 if (File.Exists(link))
                 {
-                    return string.Join(Environment.NewLine, File.ReadAllLines(link));
+                    content = string.Join(Environment.NewLine, File.ReadAllLines(link));
                 }
             }
 
-            return null;
+            _sourceLinkContents[link] = content;
+
+            return content;
         }
     }
 }
