@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-  	<_ReportPortal_Extensions_SourceBack_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">netstandard2.0</_ReportPortal_Extensions_SourceBack_Runtime>
+    <_ReportPortal_Extensions_SourceBack_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">netstandard2.0</_ReportPortal_Extensions_SourceBack_Runtime>
     <_ReportPortal_Extensions_SourceBack_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">net45</_ReportPortal_Extensions_SourceBack_Runtime>
 
     <_ReportPortal_Extensions_SourceBack_Runtime_Path>$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Extensions_SourceBack_Runtime)\ReportPortal.Extensions.SourceBack.dll</_ReportPortal_Extensions_SourceBack_Runtime_Path>
