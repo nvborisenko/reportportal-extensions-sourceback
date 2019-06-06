@@ -14,8 +14,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(DebugType)'=='embedded' or '$(DebugType)'=='portable'">
-    <EmbeddedFiles Include="@(Compile)" />
-  </ItemGroup>
-
 </Project>
