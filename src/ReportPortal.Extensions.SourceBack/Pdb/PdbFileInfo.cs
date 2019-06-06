@@ -27,17 +27,24 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
             using (var fileStream = File.OpenRead(FilePath))
             {
-                var metadataReaderProvider = MetadataReaderProvider.FromPortablePdbStream(fileStream);
-
-                MetadataReader = metadataReaderProvider.GetMetadataReader();
-
-                foreach (var documentHandle in MetadataReader.Documents)
+                try
                 {
-                    var document = MetadataReader.GetDocument(documentHandle);
+                    var metadataReaderProvider = MetadataReaderProvider.FromPortablePdbStream(fileStream);
 
-                    var fileLink = MetadataReader.GetString(document.Name);
+                    MetadataReader = metadataReaderProvider.GetMetadataReader();
 
-                    SourceLinks[fileLink] = documentHandle;
+                    foreach (var documentHandle in MetadataReader.Documents)
+                    {
+                        var document = MetadataReader.GetDocument(documentHandle);
+
+                        var fileLink = MetadataReader.GetString(document.Name);
+
+                        SourceLinks[fileLink] = documentHandle;
+                    }
+                }
+                catch (BadImageFormatException exp)
+                {
+                    throw new NotSupportedException("The pdb format is not supported.", exp);
                 }
             }
         }

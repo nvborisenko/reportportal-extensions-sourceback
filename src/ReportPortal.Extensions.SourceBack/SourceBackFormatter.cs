@@ -47,7 +47,14 @@ namespace ReportPortal.Extensions.SourceBack
                                 {
                                     var pdbFileInfo = new Pdb.PdbFileInfo(pdbFilePath);
 
-                                    pdbFileInfo.LoadSourceLinks();
+                                    try
+                                    {
+                                        pdbFileInfo.LoadSourceLinks();
+                                    }
+                                    catch(NotSupportedException exp)
+                                    {
+                                        sectionBuilder.AppendLine($"```{Environment.NewLine}This pdb format is not supported. Try to change it to 'portable' or 'embedded', https://github.com/nvborisenko/reportportal-extensions-sourceback/blob/master/README.md. {Environment.NewLine}```");
+                                    }
 
                                     _pdbs.Add(pdbFileInfo);
                                 }
