@@ -32,5 +32,20 @@ namespace ReportPortal.Extensions.SourceBack.Test
                 StringAssert.Contains("throw new Exception", log.Text);
             }
         }
+
+        [Test]
+        public void ThreadTest1()
+        {
+            var tasks = new List<Task>();
+            for (int i = 0; i < 10; i++)
+            {
+                tasks.Add(Task.Run(() =>
+                    {
+                        Test1();
+                    }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+        }
     }
 }

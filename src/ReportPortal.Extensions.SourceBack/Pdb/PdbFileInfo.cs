@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -19,7 +20,7 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
         public IDictionary<string, DocumentHandle> SourceLinks { get; set; }
 
-        private IDictionary<string, string> _sourceLinkContents = new Dictionary<string, string>();
+        private IDictionary<string, string> _sourceLinkContents = new ConcurrentDictionary<string, string>();
 
         public void LoadSourceLinks()
         {

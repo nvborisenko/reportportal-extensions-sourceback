@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Client.Requests;
+using ReportPortal.Extensions.SourceBack.Pdb;
 using ReportPortal.Shared.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -35,28 +36,31 @@ namespace ReportPortal.Extensions.SourceBack
 
                         try
                         {
-                            if (_pdbs == null)
+                            lock (_pdbsLock)
                             {
-                                var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
-
-                                var pdbFilePaths = Pdb.DirectoryScanner.FindPdbPaths(currentDirectory);
-
-                                _pdbs = new List<Pdb.PdbFileInfo>();
-
-                                foreach (var pdbFilePath in pdbFilePaths)
+                                if (_pdbs == null)
                                 {
-                                    var pdbFileInfo = new Pdb.PdbFileInfo(pdbFilePath);
+                                    _pdbs = new List<PdbFileInfo>();
 
-                                    try
-                                    {
-                                        pdbFileInfo.LoadSourceLinks();
-                                    }
-                                    catch(NotSupportedException exp)
-                                    {
-                                        sectionBuilder.AppendLine($"```{Environment.NewLine}This pdb format is not supported. Try to change it to 'portable' or 'embedded', https://github.com/nvborisenko/reportportal-extensions-sourceback/blob/master/README.md. {Environment.NewLine}```");
-                                    }
+                                    var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
 
-                                    _pdbs.Add(pdbFileInfo);
+                                    var pdbFilePaths = DirectoryScanner.FindPdbPaths(currentDirectory);
+
+                                    foreach (var pdbFilePath in pdbFilePaths)
+                                    {
+                                        var pdbFileInfo = new PdbFileInfo(pdbFilePath);
+
+                                        try
+                                        {
+                                            pdbFileInfo.LoadSourceLinks();
+                                        }
+                                        catch (NotSupportedException)
+                                        {
+                                            sectionBuilder.AppendLine($"```{Environment.NewLine}This pdb format is not supported. Try to change it to 'portable' or 'embedded', https://github.com/nvborisenko/reportportal-extensions-sourceback/blob/master/README.md. {Environment.NewLine}```");
+                                        }
+
+                                        _pdbs.Add(pdbFileInfo);
+                                    }
                                 }
                             }
 
@@ -70,7 +74,6 @@ namespace ReportPortal.Extensions.SourceBack
                                 // if available
                                 if (content != null)
                                 {
-
                                     var contentLines = content.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
 
                                     // above
@@ -116,6 +119,7 @@ namespace ReportPortal.Extensions.SourceBack
             return handled;
         }
 
-        private List<Pdb.PdbFileInfo> _pdbs;
+        private static readonly object _pdbsLock = new object();
+        private static List<PdbFileInfo> _pdbs;
     }
 }
