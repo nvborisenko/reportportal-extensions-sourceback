@@ -15,7 +15,7 @@ namespace ReportPortal.Extensions.SourceBack.Test
             {
                 var tasks = new List<Task>();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     var t = Task.Run(() => { throw new Exception("Test"); });
                     tasks.Add(t);
@@ -28,7 +28,6 @@ namespace ReportPortal.Extensions.SourceBack.Test
                 var ext = new SourceBackFormatter();
                 var log = new Client.Requests.AddLogItemRequest { Level = Client.Models.LogLevel.Error, Text = exp.ToString() };
                 ext.FormatLog(ref log);
-                Console.WriteLine(log.Text);
                 StringAssert.Contains("throw new Exception", log.Text);
             }
         }

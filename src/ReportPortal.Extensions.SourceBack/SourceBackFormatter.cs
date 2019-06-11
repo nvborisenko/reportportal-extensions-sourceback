@@ -56,7 +56,7 @@ namespace ReportPortal.Extensions.SourceBack
                                         }
                                         catch (NotSupportedException)
                                         {
-                                            sectionBuilder.AppendLine($"```{Environment.NewLine}This pdb format is not supported. Try to change it to 'portable' or 'embedded', https://github.com/nvborisenko/reportportal-extensions-sourceback/blob/master/README.md. {Environment.NewLine}```");
+                                            sectionBuilder.AppendLine($"```{pdbFilePath} format is not supported. Try to change it to 'portable' or 'embedded'.```");
                                         }
 
                                         _pdbs.Add(pdbFileInfo);
@@ -106,7 +106,7 @@ namespace ReportPortal.Extensions.SourceBack
                     }
                     else
                     {
-                        fullMessageBuilder.Append(line + Environment.NewLine);
+                        fullMessageBuilder.AppendLine(line);
                     }
                 }
             }
