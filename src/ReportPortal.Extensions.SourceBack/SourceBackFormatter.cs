@@ -56,7 +56,7 @@ namespace ReportPortal.Extensions.SourceBack
                                         }
                                         catch (NotSupportedException)
                                         {
-                                            sectionBuilder.AppendLine($"```{pdbFilePath} format is not supported. Try to change it to 'portable' or 'embedded'.```");
+                                            sectionBuilder.AppendLine($"`{pdbFilePath} format is not supported. Try to change it to 'portable' or 'embedded'.`");
                                         }
 
                                         _pdbs.Add(pdbFileInfo);
