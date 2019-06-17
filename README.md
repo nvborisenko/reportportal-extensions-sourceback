@@ -1,5 +1,7 @@
 Install `ReportPortal.Extensions.SourceBack` nuget package into tests project and see in report where exactly test was failed.
 
+![Example](docs/Screenshot.png)
+
 # How it works
 This package embedds your tests source code into `pdb` file. When test fails, `sourceback` package tracks exceptions stacktrace and inserts corresponding piece of code. This works even if you build and execute tests on different machines.
 
