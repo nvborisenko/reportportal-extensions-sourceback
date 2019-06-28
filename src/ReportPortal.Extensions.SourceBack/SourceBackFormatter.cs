@@ -25,6 +25,8 @@ namespace ReportPortal.Extensions.SourceBack
             {
                 foreach (var line in logRequest.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
                 {
+                    var lineWithoutMarkdown = line.Replace("`", @"\`").Replace("__", @"\__");
+
                     var match = Regex.Match(line, @"\s+\w+\s.*\s\w+\s(.*):\w+\s(\d+)");
 
                     if (match.Success)
@@ -104,16 +106,16 @@ namespace ReportPortal.Extensions.SourceBack
 
                         if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
                         {
-                            fullMessageBuilder.AppendLine($"{line}{Environment.NewLine}{sectionBuilder}");
+                            fullMessageBuilder.AppendLine($"{lineWithoutMarkdown}{Environment.NewLine}{sectionBuilder}");
                         }
                         else
                         {
-                            fullMessageBuilder.AppendLine(line);
+                            fullMessageBuilder.AppendLine(lineWithoutMarkdown);
                         }
                     }
                     else
                     {
-                        fullMessageBuilder.AppendLine(line);
+                        fullMessageBuilder.AppendLine(lineWithoutMarkdown);
                     }
                 }
             }
