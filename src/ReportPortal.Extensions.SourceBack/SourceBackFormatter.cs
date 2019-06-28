@@ -90,7 +90,7 @@ namespace ReportPortal.Extensions.SourceBack
                                     frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
                                     var frameContent = string.Join(Environment.NewLine, frameContentLines);
 
-                                    sectionBuilder.AppendLine($"{Environment.NewLine}```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
+                                    sectionBuilder.AppendLine($"```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
                                     sectionBuilder.AppendLine($"[Open in VisualStudioCode](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})");
                                 }
                             }
@@ -102,7 +102,14 @@ namespace ReportPortal.Extensions.SourceBack
 
                         handled = true;
 
-                        fullMessageBuilder.AppendLine($"{line}{Environment.NewLine}{sectionBuilder}");
+                        if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
+                        {
+                            fullMessageBuilder.AppendLine($"{line}{Environment.NewLine}{sectionBuilder}");
+                        }
+                        else
+                        {
+                            fullMessageBuilder.AppendLine(line);
+                        }
                     }
                     else
                     {
