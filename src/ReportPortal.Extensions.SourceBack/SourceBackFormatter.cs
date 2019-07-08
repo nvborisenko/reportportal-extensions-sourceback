@@ -106,7 +106,9 @@ namespace ReportPortal.Extensions.SourceBack
                         if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
                         {
                             var sourceFileName = Path.GetFileName(sourcePath);
-                            var lineWithEditLink = lineWithoutMarkdown.Replace(sourceFileName, $"**{sourceFileName}**").Remove(lineWithoutMarkdown.Length - match.Groups[2].Value.Length) + $"[{match.Groups[2].Value}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
+                            var lineWithEditLink = lineWithoutMarkdown.Replace("\\" + sourceFileName, $"\\\\**{sourceFileName}**");
+                            lineWithEditLink = lineWithEditLink.Remove(lineWithEditLink.Length - match.Groups[2].Value.Length) + $"[{match.Groups[2].Value}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
+                            
 
                             fullMessageBuilder.AppendLine($"{lineWithEditLink}{Environment.NewLine}{sectionBuilder}");
                         }
