@@ -93,7 +93,6 @@ namespace ReportPortal.Extensions.SourceBack
                                     var frameContent = string.Join(Environment.NewLine, frameContentLines);
 
                                     sectionBuilder.AppendLine($"```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
-                                    sectionBuilder.AppendLine($"[Open in VisualStudioCode](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})");
                                 }
                             }
                         }
@@ -106,7 +105,9 @@ namespace ReportPortal.Extensions.SourceBack
 
                         if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
                         {
-                            fullMessageBuilder.AppendLine($"{lineWithoutMarkdown}{Environment.NewLine}{sectionBuilder}");
+                            var lineWithEditLink = lineWithoutMarkdown.Remove(lineWithoutMarkdown.Length - match.Groups[2].Value.Length) + $"[{lineIndex}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
+
+                            fullMessageBuilder.AppendLine($"{lineWithEditLink}{Environment.NewLine}{sectionBuilder}");
                         }
                         else
                         {
