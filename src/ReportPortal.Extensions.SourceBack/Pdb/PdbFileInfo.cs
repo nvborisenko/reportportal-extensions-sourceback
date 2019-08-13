@@ -73,24 +73,33 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
                     // decompress content
                     int uncompressedSize = BitConverter.ToInt32(bytes, 0);
 
-                    var stream = new MemoryStream(bytes, sizeof(int), bytes.Length - sizeof(int));
-
-                    if (uncompressedSize != 0)
+                    using (var stream = new MemoryStream(bytes, sizeof(int), bytes.Length - sizeof(int)))
                     {
-                        var decompressed = new MemoryStream(uncompressedSize);
-
-                        using (var deflateStream = new DeflateStream(stream, CompressionMode.Decompress))
+                        if (uncompressedSize != 0)
                         {
-                            deflateStream.CopyTo(decompressed);
+                            using (var decompressed = new MemoryStream(uncompressedSize))
+                            {
+                                using (var deflateStream = new DeflateStream(stream, CompressionMode.Decompress))
+                                {
+                                    deflateStream.CopyTo(decompressed);
+                                }
+
+                                using (var streamReader = new StreamReader(decompressed))
+                                {
+                                    decompressed.Position = 0;
+                                    content = streamReader.ReadToEnd();
+                                }
+                            }
                         }
-
-                        stream = decompressed;
+                        else
+                        {
+                            using (var streamReader = new StreamReader(stream))
+                            {
+                                stream.Position = 0;
+                                content = streamReader.ReadToEnd();
+                            }
+                        }
                     }
-
-                    stream.Position = 0;
-                    StreamReader streamReader = new StreamReader(stream);
-
-                    content = streamReader.ReadToEnd();
                 }
             }
 
@@ -99,7 +108,7 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
                 // from external link
                 if (File.Exists(link))
                 {
-                    content = string.Join(Environment.NewLine, File.ReadAllLines(link));
+                    content = File.ReadAllText(link);
                 }
             }
 

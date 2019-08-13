@@ -76,7 +76,7 @@ namespace ReportPortal.Extensions.SourceBack
                                 // if available
                                 if (content != null)
                                 {
-                                    var contentLines = content.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
+                                    var contentLines = content.Replace("\r\n", "\n").Split(new string[] { "\n" }, StringSplitOptions.None);
 
                                     // above
                                     var takeFromIndex = lineIndex - 4;
@@ -108,7 +108,7 @@ namespace ReportPortal.Extensions.SourceBack
                             var sourceFileName = Path.GetFileName(sourcePath);
                             var lineWithEditLink = lineWithoutMarkdown.Replace("\\" + sourceFileName, $"\\\\**{sourceFileName}**");
                             lineWithEditLink = lineWithEditLink.Remove(lineWithEditLink.Length - match.Groups[2].Value.Length) + $"[{match.Groups[2].Value}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
-                            
+
 
                             fullMessageBuilder.AppendLine($"{lineWithEditLink}{Environment.NewLine}{sectionBuilder}");
                         }
