@@ -1,5 +1,7 @@
 ﻿using ReportPortal.Client.Requests;
 using ReportPortal.Extensions.SourceBack.Pdb;
+using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,15 @@ namespace ReportPortal.Extensions.SourceBack
 {
     public class SourceBackFormatter : ILogFormatter
     {
+        public SourceBackFormatter()
+        {
+            var jsonConfigPath = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location) + "ReportPortal.config.json";
+            Config = new ConfigurationBuilder().AddJsonFile(jsonConfigPath).AddEnvironmentVariables().Build();
+        }
+
         public int Order => 10;
+
+        private IConfiguration Config { get; }
 
         public bool FormatLog(ref AddLogItemRequest logRequest)
         {
@@ -78,18 +88,26 @@ namespace ReportPortal.Extensions.SourceBack
                                 {
                                     var contentLines = content.Replace("\r\n", "\n").Split(new string[] { "\n" }, StringSplitOptions.None);
 
-                                    // above
-                                    var takeFromIndex = lineIndex - 4;
-                                    if (takeFromIndex < 0) takeFromIndex = 0;
+                                    // up
+                                    var offsetUp = Config.GetValue("Extensions:SourceBack:OffsetUp", 4);
+                                    var takeFromIndex = lineIndex - offsetUp;
+                                    var missingTopLinesCount = 0;
+                                    if (takeFromIndex < 0)
+                                    {
+                                        missingTopLinesCount = Math.Abs(takeFromIndex);
+                                        takeFromIndex = 0;
+                                    }
 
-                                    // bottom
-                                    var takeToIndex = lineIndex + 2;
+                                    // down
+                                    var offsetDown = Config.GetValue("Extensions:SourceBack:OffsetDown", 2);
+                                    var takeToIndex = lineIndex + offsetDown;
                                     if (takeToIndex > contentLines.Length - 1) takeToIndex = contentLines.Length - 1;
 
                                     // and add whitespace to replace it with ►
                                     var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
-                                    // TODO: calculate new index line
-                                    frameContentLines[3] = "►" + frameContentLines[3].Remove(0, 1);
+                                    
+                                    var hightlightFrameLineIndex = offsetUp - missingTopLinesCount - 1;
+                                    frameContentLines[hightlightFrameLineIndex] = "►" + frameContentLines[hightlightFrameLineIndex].Remove(0, 1);
                                     var frameContent = string.Join(Environment.NewLine, frameContentLines);
 
                                     sectionBuilder.AppendLine($"```{Environment.NewLine}{frameContent}{Environment.NewLine}```");
@@ -107,8 +125,15 @@ namespace ReportPortal.Extensions.SourceBack
                         {
                             var sourceFileName = Path.GetFileName(sourcePath);
                             var lineWithEditLink = lineWithoutMarkdown.Replace("\\" + sourceFileName, $"\\\\**{sourceFileName}**");
-                            lineWithEditLink = lineWithEditLink.Remove(lineWithEditLink.Length - match.Groups[2].Value.Length) + $"[{match.Groups[2].Value}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
+                            lineWithEditLink = lineWithEditLink.Remove(lineWithEditLink.Length - match.Groups[2].Value.Length);
 
+                            var openWith = Config.GetValue("Extensions:SoureBack:OpenWith", "vscode");
+                            switch (openWith.ToLowerInvariant())
+                            {
+                                case "vscode":
+                                    lineWithEditLink += $"[{match.Groups[2].Value}](vscode://file/{sourcePath.Replace("\\", "/")}:{lineIndex + 1})";
+                                    break;
+                            }
 
                             fullMessageBuilder.AppendLine($"{lineWithEditLink}{Environment.NewLine}{sectionBuilder}");
                         }
