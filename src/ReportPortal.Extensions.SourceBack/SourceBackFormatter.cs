@@ -17,7 +17,7 @@ namespace ReportPortal.Extensions.SourceBack
     {
         public SourceBackFormatter()
         {
-            var jsonConfigPath = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location) + "ReportPortal.config.json";
+            var jsonConfigPath = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location) + "/ReportPortal.config.json";
             Config = new ConfigurationBuilder().AddJsonFile(jsonConfigPath).AddEnvironmentVariables().Build();
         }
 
