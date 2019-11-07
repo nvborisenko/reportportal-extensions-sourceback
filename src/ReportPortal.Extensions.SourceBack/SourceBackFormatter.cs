@@ -29,7 +29,7 @@ namespace ReportPortal.Extensions.SourceBack
         {
             var handled = false;
 
-            var fullMessageBuilder = new StringBuilder("!!!MARKDOWN_MODE!!!");
+            var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", true) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
 
             if (logRequest.Level == Client.Models.LogLevel.Error || logRequest.Level == Client.Models.LogLevel.Fatal)
             {
