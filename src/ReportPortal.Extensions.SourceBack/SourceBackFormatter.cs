@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Extensions.SourceBack.Pdb;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
@@ -25,13 +26,13 @@ namespace ReportPortal.Extensions.SourceBack
 
         private IConfiguration Config { get; }
 
-        public bool FormatLog(ref AddLogItemRequest logRequest)
+        public bool FormatLog(CreateLogItemRequest logRequest)
         {
             var handled = false;
 
-            var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", true) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
+            var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", false) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
 
-            if (logRequest.Level == Client.Models.LogLevel.Error || logRequest.Level == Client.Models.LogLevel.Fatal)
+            if (logRequest.Level == LogLevel.Error || logRequest.Level == LogLevel.Fatal)
             {
                 foreach (var line in logRequest.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
                 {

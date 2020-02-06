@@ -1,5 +1,6 @@
 using NUnit.Framework;
-using ReportPortal.Extensions.SourceBack.Pdb;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,8 +27,8 @@ namespace ReportPortal.Extensions.SourceBack.Test
             catch (Exception exp)
             {
                 var ext = new SourceBackFormatter();
-                var log = new Client.Requests.AddLogItemRequest { Level = Client.Models.LogLevel.Error, Text = exp.ToString() };
-                ext.FormatLog(ref log);
+                var log = new CreateLogItemRequest { Level = LogLevel.Error, Text = exp.ToString() };
+                ext.FormatLog(log);
                 StringAssert.Contains("throw new Exception", log.Text);
             }
         }
@@ -43,8 +44,8 @@ System.AggregateException: One or more errors occurred. ---> System.Exception: T
    at System.Threading.Tasks.Task.Execute()
 ";
             var ext = new SourceBackFormatter();
-            var log = new Client.Requests.AddLogItemRequest { Level = Client.Models.LogLevel.Error, Text = inputException };
-            ext.FormatLog(ref log);
+            var log = new CreateLogItemRequest { Level = LogLevel.Error, Text = inputException };
+            ext.FormatLog(log);
             StringAssert.Contains("!!!", log.Text);
         }
 
