@@ -46,7 +46,7 @@ System.AggregateException: One or more errors occurred. ---> System.Exception: T
             var ext = new SourceBackFormatter();
             var log = new CreateLogItemRequest { Level = LogLevel.Error, Text = inputException };
             ext.FormatLog(log);
-            StringAssert.Contains("!!!", log.Text);
+            StringAssert.Contains("AggregateException", log.Text);
         }
 
         [Test]
