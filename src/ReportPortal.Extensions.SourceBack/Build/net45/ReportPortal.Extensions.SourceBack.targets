@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_ReportPortal_Extensions_SourceBack_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\net45\ReportPortal.Extensions.SourceBack.dll</_ReportPortal_Extensions_SourceBack_Runtime_Path>
+    <_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>$(MSBuildThisFileDirectory)..\..\lib\net45\ReportPortal.Extensions.SourceBack.pdb</_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>
+  </PropertyGroup>
+
+  <Target Name="ReportPortalInjectSouces" AfterTargets="BeforeCompile" BeforeTargets="CoreCompile">
+    <ItemGroup Condition="'$(DebugType)'=='embedded' or '$(DebugType)'=='portable'" >
+      <EmbeddedFiles Include="@(Compile)" />
+    </ItemGroup>
+  </Target>
+</Project>
