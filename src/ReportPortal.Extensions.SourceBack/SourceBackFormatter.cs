@@ -1,8 +1,7 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
+﻿using ReportPortal.Client.Abstractions.Models;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Extensions.SourceBack.Pdb;
 using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -106,7 +105,7 @@ namespace ReportPortal.Extensions.SourceBack
 
                                     // and add whitespace to replace it with ►
                                     var frameContentLines = contentLines.Skip(takeFromIndex + 1).Take(takeToIndex - takeFromIndex).Select(l => " " + l).ToList();
-                                    
+
                                     var hightlightFrameLineIndex = offsetUp - missingTopLinesCount - 1;
                                     frameContentLines[hightlightFrameLineIndex] = "►" + frameContentLines[hightlightFrameLineIndex].Remove(0, 1);
                                     var frameContent = string.Join(Environment.NewLine, frameContentLines);
