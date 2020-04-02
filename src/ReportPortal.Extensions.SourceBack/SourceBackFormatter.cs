@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Extensions.SourceBack.Pdb;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,8 @@ namespace ReportPortal.Extensions.SourceBack
 {
     public class SourceBackFormatter : ILogFormatter
     {
+        private readonly ITraceLogger _traceLogger = TraceLogManager.Instance.GetLogger<SourceBackFormatter>();
+
         public SourceBackFormatter()
         {
             var jsonConfigPath = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location) + "/ReportPortal.config.json";
@@ -27,12 +30,16 @@ namespace ReportPortal.Extensions.SourceBack
 
         public bool FormatLog(CreateLogItemRequest logRequest)
         {
+            _traceLogger.Verbose("Received a log request to format.");
+
             var handled = false;
 
             var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", false) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
 
             if (logRequest.Level == LogLevel.Error || logRequest.Level == LogLevel.Fatal)
             {
+                _traceLogger.Info($"Parsing exception stacktrace in log message with {logRequest.Level} level...");
+
                 foreach (var line in logRequest.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
                 {
                     var lineWithoutMarkdown = line.Replace("`", @"\`").Replace("__", @"\__");
@@ -43,6 +50,8 @@ namespace ReportPortal.Extensions.SourceBack
                     {
                         var sourcePath = match.Groups[1].Value;
                         var lineIndex = int.Parse(match.Groups[2].Value) - 1;
+
+                        _traceLogger.Info($"It matches stacktrace. SourcePath: {sourcePath} - LineIndex: {lineIndex}");
 
                         var sectionBuilder = new StringBuilder();
 
@@ -55,6 +64,8 @@ namespace ReportPortal.Extensions.SourceBack
                                     _pdbs = new List<PdbFileInfo>();
 
                                     var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
+
+                                    _traceLogger.Verbose($"Exploring {currentDirectory} directory for PDB files");
 
                                     var pdbFilePaths = DirectoryScanner.FindPdbPaths(currentDirectory);
 
