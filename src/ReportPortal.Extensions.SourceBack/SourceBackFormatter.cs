@@ -20,8 +20,8 @@ namespace ReportPortal.Extensions.SourceBack
 
         public SourceBackFormatter()
         {
-            var jsonConfigPath = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location) + "/ReportPortal.config.json";
-            Config = new ConfigurationBuilder().AddJsonFile(jsonConfigPath).AddEnvironmentVariables().Build();
+            var configDirectory = Path.GetDirectoryName(typeof(SourceBackFormatter).Assembly.Location);
+            Config = new ConfigurationBuilder().AddDefaults(configDirectory).Build();
         }
 
         public int Order => 10;
@@ -77,9 +77,9 @@ namespace ReportPortal.Extensions.SourceBack
                                         {
                                             pdbFileInfo.LoadSourceLinks();
                                         }
-                                        catch (NotSupportedException)
+                                        catch (NotSupportedException exp)
                                         {
-                                            sectionBuilder.AppendLine($"`{pdbFilePath} format is not supported. Try to change it to 'portable' or 'embedded'.`");
+                                            _traceLogger.Warn($"{pdbFilePath} format is not supported. Try to change it to 'portable' or 'embedded'. {Environment.NewLine}{exp}");
                                         }
 
                                         _pdbs.Add(pdbFileInfo);
@@ -138,7 +138,7 @@ namespace ReportPortal.Extensions.SourceBack
                             var lineWithEditLink = lineWithoutMarkdown.Replace("\\" + sourceFileName, $"\\\\**{sourceFileName}**");
                             lineWithEditLink = lineWithEditLink.Remove(lineWithEditLink.Length - match.Groups[2].Value.Length);
 
-                            var openWith = Config.GetValue("Extensions:SoureBack:OpenWith", "vscode");
+                            var openWith = Config.GetValue("Extensions:SourceBack:OpenWith", "vscode");
                             switch (openWith.ToLowerInvariant())
                             {
                                 case "vscode":
