@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <PackageId>ReportPortal.Extensions.SourceBack</PackageId>
     <Version>1.0.0</Version>
-    <Description>Hightlight source code in report where test was failed</Description>
+    <Description>Hightlight source code in Report Portal where test failed</Description>
     <Authors>Nikolay Borisenko</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
