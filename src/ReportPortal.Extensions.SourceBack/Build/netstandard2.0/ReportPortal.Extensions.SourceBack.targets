@@ -6,6 +6,10 @@
     <_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>$(MSBuildThisFileDirectory)..\..\lib\netstandard2.0\ReportPortal.Extensions.SourceBack.pdb</_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
   <Target Name="ReportPortalInjectSouces" AfterTargets="BeforeCompile" BeforeTargets="CoreCompile">
     <ItemGroup Condition="'$(DebugType)'=='embedded' or '$(DebugType)'=='portable'" >
       <EmbeddedFiles Include="@(Compile)" />
