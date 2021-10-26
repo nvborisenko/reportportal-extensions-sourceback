@@ -40,8 +40,10 @@ namespace ReportPortal.Extensions.SourceBack
             {
                 _traceLogger.Info($"Parsing exception stacktrace in log message with {logRequest.Level} level...");
 
-                foreach (var line in logRequest.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+                foreach (var line in logRequest.Text.Split(new string[] { Environment.NewLine, "\n" }, StringSplitOptions.None))
                 {
+                    _traceLogger.Verbose("Parsing line as stacktrace frame:" + Environment.NewLine + line);
+
                     var lineWithoutMarkdown = line.Replace("`", @"\`").Replace("__", @"\__");
 
                     var match = Regex.Match(line, @"\s+\w+\s.*\s\w+\s(.*):\w+\s(\d+)");
