@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Extensions.SourceBack.Pdb;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.ReportEvents;
 using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace ReportPortal.Extensions.SourceBack
 {
-    public class SourceBackFormatter : ILogFormatter
+    public class SourceBackFormatter : IReportEventsObserver
     {
         private readonly ITraceLogger _traceLogger = TraceLogManager.Instance.GetLogger<SourceBackFormatter>();
 
@@ -24,15 +25,27 @@ namespace ReportPortal.Extensions.SourceBack
             Config = new ConfigurationBuilder().AddDefaults(configDirectory).Build();
         }
 
-        public int Order => 10;
-
         private IConfiguration Config { get; }
 
-        public bool FormatLog(CreateLogItemRequest logRequest)
+        public void Initialize(IReportEventsSource reportEventsSource)
+        {
+            reportEventsSource.OnBeforeLogsSending += ReportEventsSource_OnBeforeLogsSending;
+        }
+
+        private void ReportEventsSource_OnBeforeLogsSending(Shared.Reporter.ILogsReporter logsReporter, Shared.Extensibility.ReportEvents.EventArgs.BeforeLogsSendingEventArgs args)
+        {
+            if (args.CreateLogItemRequests != null)
+            {
+                foreach (var createLogItemRequest in args.CreateLogItemRequests)
+                {
+                    FormatLog(createLogItemRequest);
+                }
+            }
+        }
+
+        public void FormatLog(CreateLogItemRequest logRequest)
         {
             _traceLogger.Verbose("Received a log request to format.");
-
-            var handled = false;
 
             var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", false) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
 
@@ -132,8 +145,6 @@ namespace ReportPortal.Extensions.SourceBack
                             sectionBuilder.AppendLine($"```{Environment.NewLine}SourceBack error: {exp}{Environment.NewLine}```");
                         }
 
-                        handled = true;
-
                         if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
                         {
                             var sourceFileName = Path.GetFileName(sourcePath);
@@ -162,12 +173,7 @@ namespace ReportPortal.Extensions.SourceBack
                 }
             }
 
-            if (handled)
-            {
-                logRequest.Text = fullMessageBuilder.ToString();
-            }
-
-            return handled;
+            logRequest.Text = fullMessageBuilder.ToString();
         }
 
         private static readonly object _pdbsLock = new object();
