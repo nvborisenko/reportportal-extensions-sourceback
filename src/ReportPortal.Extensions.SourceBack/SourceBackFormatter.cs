@@ -47,6 +47,8 @@ namespace ReportPortal.Extensions.SourceBack
         {
             _traceLogger.Verbose("Received a log request to format.");
 
+            var handled = false;
+
             var fullMessageBuilder = Config.GetValue("Extensions:SourceBack:WithMarkdownPrefix", false) ? new StringBuilder("!!!MARKDOWN_MODE!!!") : new StringBuilder();
 
             if (logRequest.Level == LogLevel.Error || logRequest.Level == LogLevel.Fatal)
@@ -145,6 +147,8 @@ namespace ReportPortal.Extensions.SourceBack
                             sectionBuilder.AppendLine($"```{Environment.NewLine}SourceBack error: {exp}{Environment.NewLine}```");
                         }
 
+                        handled = true;
+
                         if (!string.IsNullOrEmpty(sectionBuilder.ToString()))
                         {
                             var sourceFileName = Path.GetFileName(sourcePath);
@@ -173,7 +177,10 @@ namespace ReportPortal.Extensions.SourceBack
                 }
             }
 
-            logRequest.Text = fullMessageBuilder.ToString();
+            if (handled)
+            {
+                logRequest.Text = fullMessageBuilder.ToString();
+            }
         }
 
         private static readonly object _pdbsLock = new object();
