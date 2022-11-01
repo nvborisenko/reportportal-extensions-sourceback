@@ -2,8 +2,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <_ReportPortal_Extensions_SourceBack_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\net45\ReportPortal.Extensions.SourceBack.dll</_ReportPortal_Extensions_SourceBack_Runtime_Path>
-    <_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>$(MSBuildThisFileDirectory)..\..\lib\net45\ReportPortal.Extensions.SourceBack.pdb</_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>
+    <_ReportPortal_Extensions_SourceBack_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\net461\ReportPortal.Extensions.SourceBack.dll</_ReportPortal_Extensions_SourceBack_Runtime_Path>
+    <_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>$(MSBuildThisFileDirectory)..\..\lib\net461\ReportPortal.Extensions.SourceBack.pdb</_ReportPortal_Extensions_SourceBack_Runtime_Pdb_Path>
   </PropertyGroup>
 
   <PropertyGroup>

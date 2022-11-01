@@ -13,9 +13,9 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
             if (!dir.Exists) throw new ArgumentException($"Directory not found by '{path}' path.");
 
-            var files = dir.GetFiles("*.pdb");
+            var dllFiles = dir.GetFiles("*.dll");
 
-            return files.Select(f => f.FullName);
+            return dllFiles.Select(f => f.FullName);
         }
     }
 }

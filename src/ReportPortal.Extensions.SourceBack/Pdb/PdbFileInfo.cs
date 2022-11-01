@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 
 namespace ReportPortal.Extensions.SourceBack.Pdb
 {
@@ -22,7 +23,7 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
 
         private IDictionary<string, string> _sourceLinkContents = new ConcurrentDictionary<string, string>();
 
-        public void LoadSourceLinks()
+        public async void LoadSourceLinks()
         {
             SourceLinks = new Dictionary<string, DocumentHandle>();
 
@@ -30,22 +31,26 @@ namespace ReportPortal.Extensions.SourceBack.Pdb
             {
                 try
                 {
-                    var metadataReaderProvider = MetadataReaderProvider.FromPortablePdbStream(fileStream);
+                    Func<string, Stream> streamProvider = file => new FileStream(file, FileMode.Open, FileAccess.Read);
+                    var peReader = new PEReader(fileStream);
 
-                    MetadataReader = metadataReaderProvider.GetMetadataReader();
-
-                    foreach (var documentHandle in MetadataReader.Documents)
+                    if (peReader.TryOpenAssociatedPortablePdb(fileStream.Name, streamProvider, out var metadatReaderProvider, out var pdbPath))
                     {
-                        var document = MetadataReader.GetDocument(documentHandle);
+                        MetadataReader = metadatReaderProvider.GetMetadataReader();
 
-                        var fileLink = MetadataReader.GetString(document.Name);
+                        foreach (var documentHandle in MetadataReader.Documents)
+                        {
+                            var document = MetadataReader.GetDocument(documentHandle);
 
-                        SourceLinks[fileLink] = documentHandle;
+                            var fileLink = MetadataReader.GetString(document.Name);
+
+                            SourceLinks[fileLink] = documentHandle;
+                        }
                     }
                 }
                 catch (BadImageFormatException exp)
                 {
-                    throw new NotSupportedException("The pdb format is not supported.", exp);
+                    throw new NotSupportedException($"The pdb format is not supported for the image: '{FilePath}'.", exp);
                 }
             }
         }
